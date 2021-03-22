@@ -3,6 +3,7 @@ OpenSTF related keywords for robot-framework for local usage
 """
 from robot_stf import __version__
 from stf_appium_client import StfClient, Appium, AdbServer
+from stf_appium_client.Logger import Logger
 import atexit
 
 
@@ -10,13 +11,14 @@ def as_seconds(minutes: int):
     return minutes * 60
 
 
-class RobotStf:
+class RobotStf(Logger):
     """ RobotFramework STF plugin """
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
     ROBOT_LIBRARY_VERSION = __version__
     StfClient = StfClient
 
     def __init__(self, hostname, token):
+        super().__init__()
         self._stf = self.StfClient(hostname)
         self._stf.connect(token)
         self._devices = list()
@@ -48,7 +50,7 @@ class RobotStf:
                 self.stop_appium(device)
                 self.stop_adb(device)
 
-    def unlock(self, device):
+    def unlock(self, device: dict):
         assert device.get('owner'), 'device not locked'
         self._stf.release(device)
 
@@ -56,11 +58,11 @@ class RobotStf:
         self.start_adb(device)
         self.start_appium(device)
 
-    def teardown_appium(self, device):
+    def teardown_appium(self, device: dict):
         self.stop_adb(device)
         self.stop_appium(device)
 
-    def start_adb(self, device):
+    def start_adb(self, device: dict):
         assert device, 'device not locked'
         assert not device.get('adb'), 'device adb is already running'
         adb_adr = self._stf.remote_connect(device)
@@ -69,7 +71,7 @@ class RobotStf:
         device['adb'] = adb
         adb.connect(adb_adr)
 
-    def stop_adb(self, device):
+    def stop_adb(self, device: dict):
         assert device, 'device not locked'
         adb = device.get('adb')
         assert adb, 'device adb not running'
@@ -78,7 +80,7 @@ class RobotStf:
         device['remote_adb_url'] = None
         device['adb'] = None
 
-    def start_appium(self, device):
+    def start_appium(self, device: dict):
         assert device, 'device not locked'
         assert not device.get('appium'), 'device appium is already running'
         appium = Appium()
@@ -87,7 +89,7 @@ class RobotStf:
         appium.start()
         return f'http://localhost:{appium.port}'
 
-    def stop_appium(self, device):
+    def stop_appium(self, device: dict):
         assert device, 'device not locked'
         assert device.get('appium'), 'device appium is not running'
         appium = device.get('appium')
