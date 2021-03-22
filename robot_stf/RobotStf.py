@@ -59,8 +59,8 @@ class RobotStf(Logger):
         self.start_appium(device)
 
     def teardown_appium(self, device: dict):
-        self.stop_adb(device)
         self.stop_appium(device)
+        self.stop_adb(device)
 
     def start_adb(self, device: dict):
         assert device, 'device not locked'

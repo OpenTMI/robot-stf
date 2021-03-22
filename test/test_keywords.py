@@ -18,7 +18,7 @@ class TestRobotStf(unittest.TestCase):
         if not (which('adb') and which('appium')):
             self.skipTest('adb or Appium is missing!')
         stf = RobotStf('localhost', 'token')
-        stf._stf.find_and_allocate.return_value = {'serial': '1'}
+        stf._stf.find_wait_and_allocate.return_value = {'serial': '1'}
         stf._stf.remote_connect.return_value = 'localhost'
         device = stf.lock({})
         stf.setup_appium(device)
