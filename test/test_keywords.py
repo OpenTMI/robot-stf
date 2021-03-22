@@ -1,4 +1,5 @@
 import unittest
+from shutil import which
 from unittest.mock import patch
 from robot_stf.RobotStf import RobotStf
 
@@ -14,6 +15,8 @@ class TestRobotStf(unittest.TestCase):
 
     @patch('robot_stf.RobotStf.StfClient', autospec=True)
     def test_setup_appium(self, stf_client):
+        if not (which('adb') and which('appium')):
+            self.skipTest('adb or Appium is missing!')
         stf = RobotStf('localhost', 'token')
         stf._stf.find_and_allocate.return_value = {'serial': '1'}
         stf._stf.remote_connect.return_value = 'localhost'

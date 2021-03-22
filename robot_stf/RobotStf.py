@@ -6,6 +6,10 @@ from stf_appium_client import StfClient, Appium, AdbServer
 import atexit
 
 
+def as_seconds(minutes: int):
+    return minutes * 60
+
+
 class RobotStf:
     """ RobotFramework STF plugin """
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
@@ -22,9 +26,17 @@ class RobotStf:
             nonlocal self
             self.exit()
 
-    def lock(self, requirements: dict, timeout_seconds: int = 60*60):
+    def lock(self,
+             requirements: dict,
+             wait_timeout=as_seconds(minutes=5),
+             timeout_seconds: int = as_seconds(minutes=30),
+             shuffle: bool = True):
         """ Allocate phone and return it's details """
-        device = self._stf.find_and_allocate(requirements=requirements, timeout_seconds=timeout_seconds)
+        device = self._stf.find_wait_and_allocate(
+            requirements=requirements,
+            wait_timeout=wait_timeout,
+            timeout_seconds=timeout_seconds,
+            shuffle=shuffle)
         self._devices.append(device)
         return device
 

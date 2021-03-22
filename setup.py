@@ -39,7 +39,7 @@ setup(
     setup_requires=["setuptools_scm"],
     install_requires=[
         "robotframework",
-        "stf-appium-client"
+        "stf-appium-client==0.4.0"
     ],
     extras_require={  # Optional
         'dev': ['wheel', 'coverage', 'coveralls', 'mock', 'pylint', 'nose', 'pyinstaller']
