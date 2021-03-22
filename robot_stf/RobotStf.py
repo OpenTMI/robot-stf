@@ -10,9 +10,10 @@ class RobotStf:
     """ RobotFramework STF plugin """
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
     ROBOT_LIBRARY_VERSION = __version__
+    StfClient = StfClient
 
     def __init__(self, hostname, token):
-        self._stf = StfClient(hostname)
+        self._stf = self.StfClient(hostname)
         self._stf.connect(token)
         self._devices = list()
 
@@ -52,7 +53,7 @@ class RobotStf:
         assert not device.get('adb'), 'device adb is already running'
         adb_adr = self._stf.remote_connect(device)
         device['remote_adb_url'] = adb_adr
-        adb = AdbServer()
+        adb = AdbServer(adb_adr)
         device['adb'] = adb
         adb.connect(adb_adr)
 
