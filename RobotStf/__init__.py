@@ -11,4 +11,4 @@ except DistributionNotFound:
 __pypi_url__ = "https://pypi.python.org/pypi/robot-stf"
 __robot_info__ = get_distribution("robotframework")
 
-from robot_stf.RobotStf import RobotStf  # pylint: disable=wrong-import-position
+from RobotStf.RobotStf import RobotStf  # pylint: disable=wrong-import-position

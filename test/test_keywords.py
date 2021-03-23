@@ -1,7 +1,7 @@
 import unittest
 from shutil import which
 from unittest.mock import patch
-from robot_stf.RobotStf import RobotStf
+from RobotStf.RobotStf import RobotStf
 
 
 class TestRobotStf(unittest.TestCase):

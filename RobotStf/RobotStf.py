@@ -1,10 +1,11 @@
 """
 OpenSTF related keywords for robot-framework for local usage
 """
-from robot_stf import __version__
+import atexit
+from RobotStf import __version__
 from stf_appium_client import StfClient, Appium, AdbServer
 from stf_appium_client.Logger import Logger
-import atexit
+from stf_appium_client.tools import parse_requirements
 
 
 def as_seconds(minutes: int):
@@ -29,11 +30,15 @@ class RobotStf(Logger):
             self.exit()
 
     def lock(self,
-             requirements: dict,
+             requirements: str,
              wait_timeout=as_seconds(minutes=5),
              timeout_seconds: int = as_seconds(minutes=30),
              shuffle: bool = True):
         """ Allocate phone and return it's details """
+        if isinstance(requirements, str):
+            print('parse requirements')
+            requirements = parse_requirements(requirements)
+        print(requirements)
         device = self._stf.find_wait_and_allocate(
             requirements=requirements,
             wait_timeout=wait_timeout,
@@ -46,9 +51,11 @@ class RobotStf(Logger):
         for device in self._devices:
             if device.get('owner') is not None:
                 self.logger.warn(f"exit:Release device {device.get('serial')}")
-                self.unlock(device)
-                self.stop_appium(device)
-                self.stop_adb(device)
+                self.teardown_appium(device)
+                try:
+                    self.unlock(device)
+                except Exception as error:
+                    self.logger.warn(error)
 
     def unlock(self, device: dict):
         assert device.get('owner'), 'device not locked'
@@ -59,8 +66,14 @@ class RobotStf(Logger):
         self.start_appium(device)
 
     def teardown_appium(self, device: dict):
-        self.stop_appium(device)
-        self.stop_adb(device)
+        try:
+            self.stop_appium(device)
+        except AssertionError:
+            pass
+        try:
+            self.stop_adb(device)
+        except AssertionError:
+            pass
 
     def start_adb(self, device: dict):
         assert device, 'device not locked'
@@ -69,16 +82,19 @@ class RobotStf(Logger):
         device['remote_adb_url'] = adb_adr
         adb = AdbServer(adb_adr)
         device['adb'] = adb
-        adb.connect(adb_adr)
+        device['adb_port'] = adb.port
+        adb.connect()
+        return adb.port
 
     def stop_adb(self, device: dict):
         assert device, 'device not locked'
         adb = device.get('adb')
         assert adb, 'device adb not running'
-        adb.stop()
+        adb.kill()
         self._stf.remote_disconnect(device)
-        device['remote_adb_url'] = None
+        device['remote_adb_uri'] = None
         device['adb'] = None
+        device['adb_port'] = None
 
     def start_appium(self, device: dict):
         assert device, 'device not locked'
@@ -86,12 +102,14 @@ class RobotStf(Logger):
         appium = Appium()
         device['appium'] = appium
         """ Start appium in local host and return appium url """
-        appium.start()
-        return f'http://localhost:{appium.port}'
+        appium_uri = appium.start()
+        device['appium_uri'] = appium_uri
+        return appium_uri
 
     def stop_appium(self, device: dict):
         assert device, 'device not locked'
         assert device.get('appium'), 'device appium is not running'
         appium = device.get('appium')
-        appium.stop()
+        appium.exit()
         device['appium'] = None
+        device['appium_uri'] = None

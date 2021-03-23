@@ -42,7 +42,7 @@ setup(
         "stf-appium-client==0.4.0"
     ],
     extras_require={  # Optional
-        'dev': ['wheel', 'coverage', 'coveralls', 'mock', 'pylint', 'nose', 'pyinstaller']
+        'dev': ['wheel', 'coverage', 'coveralls', 'mock', 'pylint', 'nose', 'pyinstaller', 'robotframework']
     },
     keywords="Robot Framework plugin for OpenSTF",
     python_requires=">=3.6",
