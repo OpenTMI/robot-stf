@@ -5,7 +5,7 @@ setup:
 	pip install .[dev]
 
 test:
-	nosetests --with-xunit --with-coverage --cover-package=robot_stf --cover-html --cover-html-dir=htmlcov --cover-xml-file=coverage.xml --xunit-file=results.xml
+	nosetests --with-xunit --with-coverage --cover-package=RobotStf --cover-html --cover-html-dir=htmlcov --cover-xml-file=coverage.xml --xunit-file=results.xml
 
 package:
 	python setup.py sdist
