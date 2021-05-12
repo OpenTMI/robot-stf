@@ -36,9 +36,8 @@ class RobotStf(Logger):
              shuffle: bool = True):
         """ Allocate phone and return it's details """
         if isinstance(requirements, str):
-            print('parse requirements')
             requirements = parse_requirements(requirements)
-        print(requirements)
+        self.logger.info(f'Requirements: {requirements}')
         device = self._stf.find_wait_and_allocate(
             requirements=requirements,
             wait_timeout=wait_timeout,
@@ -110,6 +109,6 @@ class RobotStf(Logger):
         assert device, 'device not locked'
         assert device.get('appium'), 'device appium is not running'
         appium = device.get('appium')
-        appium.exit()
+        appium.stop()
         device['appium'] = None
         device['appium_uri'] = None
