@@ -6,14 +6,14 @@ from RobotStf.RobotStf import RobotStf
 
 class TestRobotStf(unittest.TestCase):
 
-    @patch('robot_stf.RobotStf.StfClient', autospec=True)
+    @patch('RobotStf.RobotStf.StfClient', autospec=True)
     def test_construct(self, stf_client):
         stf = RobotStf('localhost', 'token')
         self.assertIsInstance(stf, RobotStf)
         stf_client.assert_called_once_with('localhost')
         stf._stf.connect.assert_called_once_with('token')
 
-    @patch('robot_stf.RobotStf.StfClient', autospec=True)
+    @patch('RobotStf.RobotStf.StfClient', autospec=True)
     def test_setup_appium(self, stf_client):
         if not (which('adb') and which('appium')):
             self.skipTest('adb or Appium is missing!')
