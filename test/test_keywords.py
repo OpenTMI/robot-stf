@@ -22,3 +22,4 @@ class TestRobotStf(unittest.TestCase):
         stf._stf.remote_connect.return_value = 'localhost'
         device = stf.lock({})
         stf.setup_appium(device)
+        stf.teardown_appium(device)
